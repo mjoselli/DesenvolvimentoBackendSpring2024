@@ -11,9 +11,16 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String location;
-    
+
+    public Inventory() {
+    }
+
+    public Inventory(String location) {
+        this.location = location;
+    }
+
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL)
     private Set<Item> items = new HashSet<>();
 
@@ -33,7 +40,7 @@ public class Inventory {
         this.location = location;
     }
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "inventory")
     public Set<Item> getItems() {
         return items;
     }

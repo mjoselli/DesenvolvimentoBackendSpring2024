@@ -20,7 +20,7 @@ public class CartService {
     private ItemRepository itemRepository;
     @Autowired
     private InventoryRepository inventoryRepository;
-    
+
     @Transactional
     public Cart createCart(String username) {
         Cart cart = new Cart();
@@ -46,38 +46,36 @@ public class CartService {
 
     @Transactional
     public Item addItemToCart(Long cartId, Item item) {
-        Inventory inventory = inventoryRepository.findAll().stream()
-                .findFirst().orElse(null);
-        if (inventory == null) {
-            return null;
-        }
-        Item itemInventory = inventory.getItems().stream()
-                .filter(i -> i.getName().equals(item.getName()))
-                .findFirst()
-                .orElse(null);
+        Item itemInventory = findItemFromInventory(item.getName());
         if (itemInventory == null) {
-            return null;
+            throw new RuntimeException("Item not found in inventory");
         }
         if (itemInventory.getQuantity() < item.getQuantity()) {
-            return null;
+            throw new RuntimeException("Not enough items in inventory");
         }
         return cartRepository.findById(cartId).map(cart -> {
             itemInventory.setQuantity(itemInventory.getQuantity() - item.getQuantity());
             itemRepository.save(itemInventory);
             item.setCart(cart);
             return itemRepository.save(item);
-        }).orElse(null);
+        }).orElseThrow();
     }
     @Transactional
     public void removeItemFromCart(Long cartId, Long itemId) {
         Cart cart = cartRepository.findById(cartId).orElse(null);
         if (cart == null) {
-            return;
+            throw new RuntimeException("Cart not found");
         }
         Item item = itemRepository.findById(itemId).orElse(null);
         if (item == null) {
-            return;
+            throw new RuntimeException("Item not found");
         }
+        Item itemInventory = findItemFromInventory(item.getName());
+        if (itemInventory == null) {
+            throw new RuntimeException("Item not found in inventory");
+        }
+        itemInventory.setQuantity(itemInventory.getQuantity() + item.getQuantity());
+        itemRepository.save(itemInventory);
         cart.getItems().remove(item);
         cartRepository.save(cart);
     }
@@ -86,6 +84,18 @@ public class CartService {
         return cartRepository
                 .findById(cartId)
                 .orElseThrow().getItems();
+    }
+
+    public Item findItemFromInventory(String name) {
+        return inventoryRepository
+                .findAll().stream()
+                .findFirst()
+                .orElseThrow()
+                .getItems()
+                .stream()
+                .filter(item -> item.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public Item findItemFromCart(Long cartId, Long itemId) {

@@ -19,7 +19,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterApiChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterApiChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 //.anyRequest().authenticated()
                 /*.requestMatchers(HttpMethod.POST,"api/**").authenticated()
@@ -27,14 +27,15 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"user/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"user/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,"exercicio/hello").permitAll()
-
-                 */
+                */
+                .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
                 .anyRequest().permitAll()
         );
-                //.httpBasic(withDefaults());
+        //.httpBasic(withDefaults());
         http.csrf(csrf -> csrf.disable());
         return http.build();
     }
+}
 
     /*@Bean
     public UserDetailsService userDetailsService(DataSource database){
@@ -55,5 +56,5 @@ public class SecurityConfig {
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user,admin);
-    }*/
-}
+    }
+}*/

@@ -60,7 +60,7 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/cart/{cartId}/item")
+    @PostMapping(value = "/cart/{cartId}/item", consumes = "application/json")
     public ResponseEntity<Item> addItemToCart(@PathVariable Long cartId, @RequestBody Item item) {
         return new ResponseEntity<>(cartService.addItemToCart(cartId, item), HttpStatus.CREATED);
     }

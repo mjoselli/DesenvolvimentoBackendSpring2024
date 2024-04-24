@@ -45,7 +45,7 @@ public class Cart {
         this.date = date;
     }
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "cart")
     public Set<Item> getItems() {
         return items;
     }

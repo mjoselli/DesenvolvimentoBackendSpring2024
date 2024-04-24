@@ -69,7 +69,7 @@ public class Item {
         return uid;
     }
 
-    @JsonBackReference
+    @JsonBackReference(value="cart")
     public Cart getCart() {
         return cart;
     }
@@ -78,7 +78,7 @@ public class Item {
         this.cart = cart;
     }
 
-    @JsonBackReference
+    @JsonBackReference(value="inventory")
     public Inventory getInventory() {
         return inventory;
     }
